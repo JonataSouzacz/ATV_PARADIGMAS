@@ -7,20 +7,21 @@ class Item:
         self.valor = Decimal(str(valor))
         self.acrescimo = Decimal('0')
         self.desconto = Decimal('0')
-        self.total = self.valor
+        self.atualizar_total()
 
     def aplicar_acrescimo(self, acrescimo):
-        acrescimo = Decimal(str(acrescimo))
-        self.acrescimo += acrescimo
-        self.total += acrescimo
+        self.acrescimo += Decimal(str(acrescimo))
+        self.atualizar_total()
 
     def aplicar_desconto(self, desconto):
-        desconto = Decimal(str(desconto))
-        self.desconto += desconto
-        self.total -= desconto
+        self.desconto += Decimal(str(desconto))
+        self.atualizar_total()
+
+    def atualizar_total(self):
+        self.total = self.valor + self.acrescimo - self.desconto
 
     def __str__(self):
-        return f"Código: {self.codigo}, Descrição: {self.descricao}, Valor: {self.valor}, Acréscimo: {self.acrescimo}, Desconto: {self.desconto}, Total: {self.total}"
+        return f"Código: {self.codigo}, Descrição: {self.descricao}, Valor: {self.valor:.2f}, Acréscimo: {self.acrescimo:.2f}, Desconto: {self.desconto:.2f}, Total: {self.total:.2f}"
 
 class Carrinho:
     def __init__(self):
@@ -32,6 +33,7 @@ class Carrinho:
     def alterar_valor_item(self, codigo, novo_valor):
         if codigo in self.itens:
             self.itens[codigo].valor = Decimal(str(novo_valor))
+            self.itens[codigo].atualizar_total()
 
     def alterar_acrescimo_item(self, codigo, acrescimo):
         if codigo in self.itens:
@@ -65,28 +67,25 @@ class Carrinho:
             acrescimo_total += item.acrescimo
             valor_total += item.total
 
-        valor_total += acrescimo_total - desconto_total
-
         print("\nItens do Carrinho:")
         for item in self.itens.values():
             print(item)
 
-        print(f"\nDesconto Total: {desconto_total}")
-        print(f"Acréscimo Total: {acrescimo_total}")
-        print(f"Valor Total: {valor_total}")
+        print(f"\nDesconto Total: {desconto_total:.2f}")
+        print(f"Acréscimo Total: {acrescimo_total:.2f}")
+        print(f"Valor Total: {valor_total:.2f}")
+
 def main():
     carrinho = Carrinho()
 
     while True:
-        print("\nMenu:")
-        print("1. Inserir item ao carrinho")
+        print("\n1. Inserir item")
         print("2. Alterar valor do item")
-        print("3. Alterar acréscimo de item")
-        print("4. Alterar desconto de item")
+        print("3. Alterar acréscimo do item")
+        print("4. Alterar desconto do item")
         print("5. Alterar acréscimo total")
         print("6. Alterar desconto total")
         print("7. Finalizar venda")
-
         escolha = input("Escolha uma opção: ")
 
         if escolha == "1":
