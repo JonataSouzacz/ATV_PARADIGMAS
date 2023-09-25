@@ -1,5 +1,5 @@
 class Item:
-    def __init__(self, codigo, descricao, valor):
+    def init(self, codigo, descricao, valor):
         self.codigo = codigo
         self.descricao = descricao
         self.valor = valor
@@ -15,12 +15,12 @@ class Item:
         self.desconto += desconto
         self.total -= desconto
 
-    def __str__(self):
+    def str(self):
         return f"Código: {self.codigo}, Descrição: {self.descricao}, Valor: {self.valor}, Acréscimo: {self.acrescimo}, Desconto: {self.desconto}, Total: {self.total}"
 
 
 class Carrinho:
-    def __init__(self):
+    def init(self):
         self.itens = []
 
     def inserir_item(self, item):
@@ -69,7 +69,6 @@ class Carrinho:
         print(f"Valor Total: {valor_total}")
 
 
-# Função principal
 def main():
     carrinho = Carrinho()
 
