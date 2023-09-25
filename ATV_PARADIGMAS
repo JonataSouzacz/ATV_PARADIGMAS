@@ -1,74 +1,79 @@
+from decimal import Decimal
+
 class Item:
-    def init(self, codigo, descricao, valor):
+    def __init__(self, codigo, descricao, valor):
         self.codigo = codigo
         self.descricao = descricao
-        self.valor = valor
-        self.acrescimo = 0
-        self.desconto = 0
+        self.valor = Decimal(str(valor))
+        self.acrescimo = Decimal('0')
+        self.desconto = Decimal('0')
         self.total = self.valor
 
     def aplicar_acrescimo(self, acrescimo):
+        acrescimo = Decimal(str(acrescimo))
         self.acrescimo += acrescimo
         self.total += acrescimo
 
     def aplicar_desconto(self, desconto):
+        desconto = Decimal(str(desconto))
         self.desconto += desconto
         self.total -= desconto
 
-    def str(self):
+    def __str__(self):
         return f"Código: {self.codigo}, Descrição: {self.descricao}, Valor: {self.valor}, Acréscimo: {self.acrescimo}, Desconto: {self.desconto}, Total: {self.total}"
 
-
 class Carrinho:
-    def init(self):
-        self.itens = []
+    def __init__(self):
+        self.itens = {}
 
     def inserir_item(self, item):
-        self.itens.append(item)
+        self.itens[item.codigo] = item
 
     def alterar_valor_item(self, codigo, novo_valor):
-        for item in self.itens:
-            if item.codigo == codigo:
-                item.valor = novo_valor
+        if codigo in self.itens:
+            self.itens[codigo].valor = Decimal(str(novo_valor))
 
     def alterar_acrescimo_item(self, codigo, acrescimo):
-        for item in self.itens:
-            if item.codigo == codigo:
-                item.aplicar_acrescimo(acrescimo)
+        if codigo in self.itens:
+            self.itens[codigo].aplicar_acrescimo(acrescimo)
 
     def alterar_desconto_item(self, codigo, desconto):
-        for item in self.itens:
-            if item.codigo == codigo:
-                item.aplicar_desconto(desconto)
+        if codigo in self.itens:
+            self.itens[codigo].aplicar_desconto(desconto)
 
     def alterar_acrescimo_total(self, acrescimo_total):
         num_itens = len(self.itens)
         if num_itens > 0:
-            acrescimo_por_item = acrescimo_total / num_itens
-            for item in self.itens:
+            acrescimo_por_item = Decimal(str(acrescimo_total)) / num_itens
+            for item in self.itens.values():
                 item.aplicar_acrescimo(acrescimo_por_item)
 
     def alterar_desconto_total(self, desconto_total):
         num_itens = len(self.itens)
         if num_itens > 0:
-            desconto_por_item = desconto_total / num_itens
-            for item in self.itens:
+            desconto_por_item = Decimal(str(desconto_total)) / num_itens
+            for item in self.itens.values():
                 item.aplicar_desconto(desconto_por_item)
 
     def finalizar_venda(self):
-        desconto_total = sum(item.desconto for item in self.itens)
-        acrescimo_total = sum(item.acrescimo for item in self.itens)
-        valor_total = sum(item.total for item in self.itens) + acrescimo_total - desconto_total
+        desconto_total = Decimal('0')
+        acrescimo_total = Decimal('0')
+        valor_total = Decimal('0')
+
+        for item in self.itens.values():
+            desconto_total += item.desconto
+            acrescimo_total += item.acrescimo
+            valor_total += item.total
+
+        valor_total += acrescimo_total - desconto_total
 
         print("\nItens do Carrinho:")
-        for item in self.itens:
+        for item in self.itens.values():
             print(item)
 
         print(f"\nDesconto Total: {desconto_total}")
         print(f"Acréscimo Total: {acrescimo_total}")
         print(f"Valor Total: {valor_total}")
-
-
 def main():
     carrinho = Carrinho()
 
@@ -87,33 +92,32 @@ def main():
         if escolha == "1":
             codigo = input("Código do item: ")
             descricao = input("Descrição do item: ")
-            valor = float(input("Valor do item: "))
+            valor = Decimal(input("Valor do item: "))
             item = Item(codigo, descricao, valor)
             carrinho.inserir_item(item)
         elif escolha == "2":
             codigo = input("Código do item: ")
-            novo_valor = float(input("Novo valor do item: "))
+            novo_valor = Decimal(input("Novo valor do item: "))
             carrinho.alterar_valor_item(codigo, novo_valor)
         elif escolha == "3":
             codigo = input("Código do item: ")
-            acrescimo = float(input("Valor do acréscimo: "))
+            acrescimo = Decimal(input("Valor do acréscimo: "))
             carrinho.alterar_acrescimo_item(codigo, acrescimo)
         elif escolha == "4":
             codigo = input("Código do item: ")
-            desconto = float(input("Valor do desconto: "))
+            desconto = Decimal(input("Valor do desconto: "))
             carrinho.alterar_desconto_item(codigo, desconto)
         elif escolha == "5":
-            acrescimo_total = float(input("Valor do acréscimo total: "))
+            acrescimo_total = Decimal(input("Valor do acréscimo total: "))
             carrinho.alterar_acrescimo_total(acrescimo_total)
         elif escolha == "6":
-            desconto_total = float(input("Valor do desconto total: "))
+            desconto_total = Decimal(input("Valor do desconto total: "))
             carrinho.alterar_desconto_total(desconto_total)
         elif escolha == "7":
             carrinho.finalizar_venda()
             break
         else:
             print("Opção inválida. Tente novamente.")
-
 
 if __name__ == "__main__":
     main()
